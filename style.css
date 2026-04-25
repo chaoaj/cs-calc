@@ -176,7 +176,7 @@ html, body {
   /* Reduce button heights/padding ~20% for phones so keys fit on one screen */
   .key { padding: 11px 6px; font-size: 1.12rem; }
   .current { font-size: 1.44rem; }
-  .history { font-size: 0.68rem; }
+  .history { font-size: 0.68rem; min-height: calc(5.2rem - 50px); max-height: calc(5.2rem - 50px); overflow: hidden; }
 
   /* shrink function buttons to match the reduced key size */
   .ops .key {
