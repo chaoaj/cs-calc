@@ -180,11 +180,11 @@ html, body {
 
   /* shrink function buttons to match the reduced key size */
   .ops .key {
-    height: 45px;
-    min-height: 45px;
+    height: 25px;
+    min-height: 25px;
   }
   .pad .key:nth-child(-n+6) {
-    height: 45px;
-    min-height: 45px;
+    height: 25px;
+    min-height: 25px;
   }
 }
