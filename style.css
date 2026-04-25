@@ -1,8 +1,179 @@
 html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: slategrey;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-canvas {
-  display: block;
+* { box-sizing: border-box; }
+
+:root {
+  --func-btn-height: 56px;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.calculator {
+  width: min(420px, 98vw);
+  background: #0f1724;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.25);
+  overflow: hidden;
+}
+
+.display {
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  min-height: 5.2rem; /* 5 lines buffer height */
+  max-height: 5.2rem;
+  overflow: hidden;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  line-height: 1.1;
+  padding-bottom: 6px;
+}
+
+.history .line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 0;
+}
+
+.current {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: right;
+  padding-top: 6px;
+  word-break: break-all;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  gap: 12px;
+  padding: 14px;
+  background: #450084; /* purple area around buttons */
+  align-items: stretch;
+}
+
+.display .buffer {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  text-align: right;
+  padding-top: 6px;
+  min-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.pad .key {
+  border-radius: 12px;
+  outline: 2px solid rgba(255,255,255,0.06);
+  transition: transform 80ms ease, box-shadow 120ms ease;
+}
+
+.pad .key.wide {
+  grid-column: span 2;
+}
+
+.pad .key:active {
+  transform: translateY(1px) scale(0.995);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Make the top 6 function buttons in the pad match the right-side ops button size */
+.pad .key:nth-child(-n+6) {
+  height: var(--func-btn-height);
+  min-height: var(--func-btn-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pad .key.digit {
+  /* slightly brighter digits to stand out on purple */
+  background: #2b1636;
+}
+
+.ops {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 8px;
+}
+
+.ops .key {
+  width: 100%;
+  height: var(--func-btn-height);
+  min-height: var(--func-btn-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key {
+  background: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 18px 10px;
+  font-size: 1.25rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+.key sup {
+  font-size: 0.65em;
+  line-height: 1;
+  vertical-align: super;
+}
+
+.key:active {
+  transform: translateY(1px);
+}
+
+.key.action {
+  background: #374151;
+}
+
+.key.equals {
+  background: #10b981;
+  color: #052e1f;
+  font-weight: 700;
+}
+
+.key.wide {
+  /* kept for compatibility when used outside .pad */
+  grid-column: span 2;
+}
+
+@media (max-width: 420px) {
+  .key { padding: 14px 8px; font-size: 1.4rem; }
+  .current { font-size: 1.8rem; }
+  .history { font-size: 0.85rem; }
 }
