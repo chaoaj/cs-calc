@@ -74,12 +74,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addOperatorToken(op) {
-    if (justEvaluated && currentValue === '' && lastResult !== null) {
-      // start new expression from last result
-      exprTokens = [String(lastResult)];
+    // If we just evaluated an expression, make sure the answer stays in the buffer
+    if (justEvaluated) {
+      // If there's a visible currentValue (formatted result) use it as the lhs
+      if (currentValue !== '') {
+        // leave currentValue so pushCurrentNumber will move it into exprTokens
+      } else if (exprTokens.length === 0 && lastResult !== null) {
+        // no currentValue (edge case) — seed exprTokens with lastResult
+        exprTokens = [String(formatNumberForDisplay(lastResult))];
+      }
       justEvaluated = false;
     }
     pushCurrentNumber();
+
+    // If nothing was pushed and we have a lastResult, use it as lhs
+    if (exprTokens.length === 0 && currentValue === '' && lastResult !== null) {
+      exprTokens.push(String(formatNumberForDisplay(lastResult)));
+    }
     const last = exprTokens[exprTokens.length - 1];
     if (last && (isOperator(last) || last === '(') && op !== '(') {
       // replace previous operator if consecutive (except allow '(')
