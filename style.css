@@ -173,7 +173,18 @@ html, body {
 }
 
 @media (max-width: 420px) {
-  .key { padding: 14px 8px; font-size: 1.4rem; }
-  .current { font-size: 1.8rem; }
-  .history { font-size: 0.85rem; }
+  /* Reduce button heights/padding ~20% for phones so keys fit on one screen */
+  .key { padding: 11px 6px; font-size: 1.12rem; }
+  .current { font-size: 1.44rem; }
+  .history { font-size: 0.68rem; }
+
+  /* shrink function buttons to match the reduced key size */
+  .ops .key {
+    height: 45px;
+    min-height: 45px;
+  }
+  .pad .key:nth-child(-n+6) {
+    height: 45px;
+    min-height: 45px;
+  }
 }
