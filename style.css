@@ -257,3 +257,47 @@ html, body {
 
 /* icon sizing for the copy button */
 .icon-docs { display: block; width: 20px; height: 20px; }
+
+/* Generic tooltip for any key with a data-tooltip attribute */
+.key[data-tooltip] {
+  position: relative;
+}
+.key[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  bottom: calc(100% + 8px);
+  background: rgba(0,0,0,0.88);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+  transform-origin: bottom center;
+  z-index: 50;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.4);
+}
+.key[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 4px);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.88) transparent transparent transparent;
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 51;
+}
+.key[data-tooltip]:hover::after,
+.key[data-tooltip]:focus::after,
+.key[data-tooltip]:hover::before,
+.key[data-tooltip]:focus::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}

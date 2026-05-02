@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentValue = '';
   let lastResult = null;
   let justEvaluated = false;
+  let clearPending = false;
+  let clearTimer = null;
   const history = [];
 
   const numberRegex = /^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i;
@@ -51,6 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function resetClearPending() {
+    if (clearTimer) {
+      clearTimeout(clearTimer);
+      clearTimer = null;
+    }
+    clearPending = false;
+  }
+
   function updateDisplay() {
     // update history
     historyEl.innerHTML = '';
@@ -79,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addOperatorToken(op) {
+    resetClearPending();
     // If we just evaluated an expression, make sure the answer stays in the buffer
     if (justEvaluated) {
       // If there's a visible currentValue (formatted result) use it as the lhs
@@ -163,6 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
       currentValue = String(formatNumberForDisplay(res));
     } else if (lastResult !== null) {
       const res = Math.exp(lastResult);
+      currentValue = String(formatNumberForDisplay(res));
+    } else {
+      // No operand provided — treat as e^1
+      const res = Math.exp(1);
       currentValue = String(formatNumberForDisplay(res));
     }
     justEvaluated = false;
@@ -324,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function pressBackspace() {
+    resetClearPending();
     if (justEvaluated) {
       currentValue = '';
       justEvaluated = false;
@@ -346,14 +362,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function pressClear() {
+    // Multi-press clear behavior:
+    // - First press: clear current entry (or expression if no entry).
+    // - Second press (within a short interval): clear everything (history + last result).
+
+    if (!clearPending) {
+      // First press: clear current entry if present, else clear expression tokens
+      if (currentValue !== '') currentValue = '';
+      else if (exprTokens.length > 0) exprTokens = [];
+      clearPending = true;
+      clearTimer = setTimeout(() => { clearPending = false; clearTimer = null; }, 1200);
+      updateDisplay();
+      return;
+    }
+
+    // Second press within timeframe -> full reset
+    if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+    clearPending = false;
     exprTokens = [];
     currentValue = '';
     lastResult = null;
+    history.length = 0;
     justEvaluated = false;
     updateDisplay();
   }
 
   function pressDigit(d) {
+    resetClearPending();
     if (justEvaluated) {
       exprTokens = [];
       currentValue = '';
