@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     '%': { prec: 3, assoc: 'L', fn: (a, b) => (b === 0 ? 'Error' : (a - Math.floor(a / b) * b)) },
     '//': { prec: 3, assoc: 'L', fn: (a, b) => (b === 0 ? 'Error' : Math.floor(a / b)) },
     '^': { prec: 4, assoc: 'R', fn: (a, b) => Math.pow(a, b) },
+    'log': { prec: 4, assoc: 'R', fn: (a, b) => {
+      if (typeof a !== 'number' || typeof b !== 'number') return 'Error';
+      if (a <= 0 || a === 1 || b <= 0) return 'Error';
+      return Math.log(b) / Math.log(a);
+    } },
     'nrt': { prec: 4, assoc: 'R', fn: (a, b) => (a === 0 ? 'Error' : Math.pow(b, 1 / a)) },
   };
 
@@ -107,6 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyLog() {
+    // If there's a number before (like "2 log 10") the button acts as a binary operator.
+    // Otherwise behave as the original unary base-10 log (log10).
+    if (currentValue === '' && exprTokens.length > 0 && isNumberToken(exprTokens[exprTokens.length - 1])) {
+      // Insert 'log' operator into expression stream
+      addOperatorToken('log');
+      updateDisplay();
+      return;
+    }
     if (currentValue !== '') {
       const v = parseFloat(currentValue);
       const res = (isNaN(v) || v <= 0) ? 'Error' : Math.log10(v);
@@ -295,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const actionToToken = {
-    add: '+', subtract: '-', multiply: '*', divide: '/', mod: '%', intdiv: '//', power: '^', nrt: 'nrt'
+    add: '+', subtract: '-', multiply: '*', divide: '/', mod: '%', intdiv: '//', power: '^', nrt: 'nrt', log: 'log'
   };
 
   keysEl.addEventListener('click', (ev) => {
@@ -310,7 +323,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (action === 'clear') pressClear();
     else if (action === 'back') pressBackspace();
     else if (action === 'equals') pressEquals();
-    else if (action === 'log') applyLog();
+    else if (action === 'log') {
+      // If there's a current number (user just typed it) or the last token is a number,
+      // treat 'log' as the binary operator (base log). Otherwise act as unary log10.
+      if (currentValue !== '' || (exprTokens.length > 0 && isNumberToken(exprTokens[exprTokens.length - 1]))) {
+        addOperatorToken('log');
+      } else {
+        applyLog();
+      }
+    }
     else if (action === 'exp') applyExp();
     else if (action === 'sign') toggleSign();
     else if (action === 'paren-l') addParenthesis('(');
@@ -333,7 +354,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ev.key.toLowerCase() === 'i') { addOperatorToken('//'); ev.preventDefault(); return; }
     // allow both 'n' and 'r' to trigger nRT
     if (ev.key.toLowerCase() === 'n' || ev.key.toLowerCase() === 'r') { addOperatorToken('nrt'); ev.preventDefault(); return; }
-    if (ev.key.toLowerCase() === 'l') { applyLog(); ev.preventDefault(); return; }
+    if (ev.key.toLowerCase() === 'l') {
+      // Same logic as clicking the log button: if user has just typed a number or
+      // there's a numeric token before, insert binary 'log'; otherwise do unary log10.
+      if (currentValue !== '' || (exprTokens.length > 0 && isNumberToken(exprTokens[exprTokens.length - 1]))) {
+        addOperatorToken('log');
+      } else {
+        applyLog();
+      }
+      ev.preventDefault();
+      return;
+    }
     if (ev.key.toLowerCase() === 'e') { applyExp(); ev.preventDefault(); return; }
     if (ev.key === '(') { addParenthesis('('); ev.preventDefault(); return; }
     if (ev.key === ')') { addParenthesis(')'); ev.preventDefault(); return; }
