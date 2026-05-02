@@ -20,8 +20,13 @@
 
         <div class="keys" id="keys">
           <div class="pad">
-            <!-- top control row: sign and parentheses -->
-            <button class="key action" data-action="sign">+/-</button>
+            <!-- top control row: copy and parentheses -->
+            <button class="key action" data-action="copy" data-tooltip="Copy current value to clipboard" aria-label="text" title="Copy current value">
+              <svg class="icon-docs" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <rect x="9" y="3" width="11" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+                <rect x="3" y="7" width="11" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"></rect>
+              </svg>
+            </button>
             <button class="key action" data-action="paren-l">(</button>
             <button class="key action" data-action="paren-r">)</button>
 

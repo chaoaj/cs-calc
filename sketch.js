@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let justEvaluated = false;
   const history = [];
 
-  const numberRegex = /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i;
+  const numberRegex = /^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i;
 
   const operators = {
     '+': { prec: 2, assoc: 'L', fn: (a, b) => a + b },
@@ -90,7 +90,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       justEvaluated = false;
     }
+    const hadCurrent = currentValue !== '';
     pushCurrentNumber();
+
+    // Allow + and - to act as unary signs when pressed before a number or
+    // when following another operator or an opening parenthesis. Example: 3--4 -> 3 - -4
+    if (!hadCurrent && (op === '+' || op === '-')) {
+      const lastToken = exprTokens[exprTokens.length - 1];
+      if (exprTokens.length === 0 || lastToken === '(' || (lastToken && isOperator(lastToken))) {
+        // start a signed number in the currentValue and wait for digits
+        currentValue = op;
+        updateDisplay();
+        return;
+      }
+    }
 
     // If nothing was pushed and we have a lastResult, use it as lhs
     if (exprTokens.length === 0 && currentValue === '' && lastResult !== null) {
@@ -185,6 +198,56 @@ document.addEventListener('DOMContentLoaded', () => {
       currentValue = '-';
     }
     updateDisplay();
+  }
+
+  function copyCurrentValue() {
+    let valueToCopy = null;
+    if (justEvaluated && lastResult !== null) {
+      valueToCopy = String(formatNumberForDisplay(lastResult));
+    } else if (currentValue !== '') {
+      valueToCopy = currentValue;
+    } else if (exprTokens.length > 0 && isNumberToken(exprTokens[exprTokens.length - 1])) {
+      valueToCopy = exprTokens[exprTokens.length - 1];
+    } else if (lastResult !== null) {
+      valueToCopy = String(formatNumberForDisplay(lastResult));
+    }
+
+    if (valueToCopy === null || valueToCopy === '') {
+      pushHistory('Nothing to copy');
+      updateDisplay();
+      return;
+    }
+
+    // Try Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(valueToCopy).then(() => {
+        pushHistory(`Copied: ${valueToCopy}`);
+        updateDisplay();
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = valueToCopy;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); pushHistory(`Copied: ${valueToCopy}`); }
+        catch (e) { pushHistory('Copy failed'); }
+        ta.remove();
+        updateDisplay();
+      });
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = valueToCopy;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); pushHistory(`Copied: ${valueToCopy}`); }
+      catch (e) { pushHistory('Copy failed'); }
+      ta.remove();
+      updateDisplay();
+    }
   }
 
   function evaluateExpression(tokens) {
@@ -298,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (d === '.') {
       if (currentValue.includes('.')) return;
-      if (currentValue === '' || currentValue === '-') currentValue += '0.';
+      if (currentValue === '' || currentValue === '-' || currentValue === '+') currentValue += '0.';
       else currentValue += '.';
     } else {
       if (currentValue === '0') currentValue = d;
@@ -333,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     else if (action === 'exp') applyExp();
-    else if (action === 'sign') toggleSign();
+    else if (action === 'copy') copyCurrentValue();
     else if (action === 'paren-l') addParenthesis('(');
     else if (action === 'paren-r') addParenthesis(')');
     else if (actionToToken[action]) addOperatorToken(actionToToken[action]);
@@ -370,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ev.key === ')') { addParenthesis(')'); ev.preventDefault(); return; }
     if (ev.key === 'Backspace') { pressBackspace(); ev.preventDefault(); return; }
     if (ev.key.toLowerCase() === 'c') { pressClear(); ev.preventDefault(); return; }
-    if (ev.key.toLowerCase() === 's') { toggleSign(); ev.preventDefault(); return; }
+    if (ev.key.toLowerCase() === 's') { copyCurrentValue(); ev.preventDefault(); return; }
   });
 
   updateDisplay();
