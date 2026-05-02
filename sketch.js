@@ -411,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ev.key === '*') { addOperatorToken('*'); ev.preventDefault(); return; }
     if (ev.key === '/') { addOperatorToken('/'); ev.preventDefault(); return; }
     if (ev.key === '%') { addOperatorToken('%'); ev.preventDefault(); return; }
+    if (ev.key.toLowerCase() === 'm') { addOperatorToken('%'); ev.preventDefault(); return; }
     if (ev.key === '^') { addOperatorToken('^'); ev.preventDefault(); return; }
     // allow 'x' to mean power (x^y), keep '*' for multiplication
     if (ev.key.toLowerCase() === 'x') { addOperatorToken('^'); ev.preventDefault(); return; }
