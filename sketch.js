@@ -468,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ev.key === '(') { addParenthesis('('); ev.preventDefault(); return; }
     if (ev.key === ')') { addParenthesis(')'); ev.preventDefault(); return; }
     if (ev.key === 'Backspace') { pressBackspace(); ev.preventDefault(); return; }
+    if (ev.key === 'Clear') { pressClear(); ev.preventDefault(); return; }
     if (ev.key.toLowerCase() === 'c') { pressClear(); ev.preventDefault(); return; }
     if (ev.key.toLowerCase() === 's') { copyCurrentValue(); ev.preventDefault(); return; }
   });
