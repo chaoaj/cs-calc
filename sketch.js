@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function pushHistory(line) {
     history.push(line);
-    if (history.length > 5) history.shift();
+    // keep only the last 3 entries so history doesn't overlap the UI on small screens
+    if (history.length > 3) history.shift();
   }
 
   function isNumberToken(t) {

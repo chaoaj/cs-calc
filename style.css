@@ -32,19 +32,20 @@ html, body {
 }
 
 .display {
-  padding: 14px;
+  padding: 18px;
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  /* increased vertical space for display area (~+25%) */
 }
 
 .history {
   display: flex;
   flex-direction: column;
-  min-height: 5.2rem; /* 5 lines buffer height */
-  max-height: 5.2rem;
+  min-height: 4rem; /* 3 lines buffer height increased ~25% */
+  max-height: 4rem;
   overflow: hidden;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: #9ca3af;
-  line-height: 1.1;
+  line-height: 1.05;
   padding-bottom: 6px;
 }
 
@@ -59,7 +60,7 @@ html, body {
   font-size: 2rem;
   font-weight: 700;
   text-align: right;
-  padding-top: 6px;
+  padding-top: 8px;
   word-break: break-all;
 }
 
@@ -76,8 +77,8 @@ html, body {
   color: #cbd5e1;
   font-size: 0.95rem;
   text-align: right;
-  padding-top: 6px;
-  min-height: 20px;
+  padding-top: 8px;
+  min-height: 25px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -176,7 +177,7 @@ html, body {
   /* Reduce button heights/padding ~20% for phones so keys fit on one screen */
   .key { padding: 11px 6px; font-size: 1.12rem; }
   .current { font-size: 1.44rem; }
-  .history { font-size: 0.68rem; min-height: calc(5.2rem - 50px); max-height: calc(5.2rem - 50px); overflow: hidden; }
+  .history { font-size: 0.72rem; min-height: 3.25rem; max-height: 3.25rem; overflow: hidden; }
 
   /* shrink function buttons to match the reduced key size */
   .ops .key {
@@ -197,8 +198,8 @@ html, body {
   /* don't force a full 100vh container; allow the calculator to size and scroll naturally */
   .calculator { max-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start; }
 
-  .display { padding: 8px; flex: 0 0 auto; }
-  .history { min-height: 20px; max-height: 20px; font-size: 0.65rem; padding-bottom: 2px; }
+  .display { padding: 10px; flex: 0 0 auto; }
+  .history { min-height: 2.75rem; max-height: 2.75rem; font-size: 0.68rem; padding-bottom: 3px; }
   .display .buffer { font-size: 0.85rem; min-height: 16px; padding-top: 4px; }
   .current { font-size: 1.2rem; padding-top: 4px; }
 
